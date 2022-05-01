@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<key>CFBundleIdentifier</key>
+<string><%= @release.id %></string>
+<key>CFBundleName</key>
+<string><%= @release.name %></string>
+<key>DocSetPlatformFamily</key>
+<string>elixir</string>
+<key>isJavaScriptEnabled</key>
+<true/>
+<key>isDashDocset</key>
+<true/>
+<key>DashDocSetPluginKeyword</key>
+<string><%= @release.name %></string>
+</dict>
+</plist>
