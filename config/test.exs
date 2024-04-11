@@ -10,6 +10,9 @@ config :doc_supply, DocSupplyWeb.Endpoint,
 # In test we don't send emails.
 config :doc_supply, DocSupply.Mailer, adapter: Swoosh.Adapters.Test
 
+# Use local hex repository
+config :doc_supply, DocSupply.Hex, config_provider: DocSupplyWeb.Repository
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 

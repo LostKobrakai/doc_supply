@@ -1,16 +1,26 @@
 defmodule DocSupply.Hex do
   def get_package_details(package) do
-    case :hex_api_package.get(config(), package) do
+    case :hex_repo.get_package(config(), package) do
       {:ok, {200, _, %{} = details}} ->
+        versions =
+          details.releases
+          |> Stream.map(& &1.version)
+          |> MapSet.new()
+
+        latest_stable =
+          versions
+          |> Enum.sort({:desc, Version})
+          |> Enum.find_value(fn version ->
+            case Version.parse!(version) do
+              %{pre: []} -> version
+              _ -> nil
+            end
+          end)
+
         data = %{
-          package: Map.fetch!(details, "name"),
-          latest_stable_version: Map.fetch!(details, "latest_stable_version"),
-          versions:
-            details
-            |> Map.fetch!("releases")
-            |> Stream.filter(&Map.fetch!(&1, "has_docs"))
-            |> Stream.map(&Map.fetch!(&1, "version"))
-            |> MapSet.new()
+          package: details.name,
+          latest_stable_version: latest_stable,
+          versions: versions
         }
 
         {:ok, data}
@@ -23,10 +33,7 @@ defmodule DocSupply.Hex do
   def fetch_docset(package, version) do
     config = config()
 
-    with {:ok, {200, _, %{} = details}} <- :hex_api_release.get(config, package, version),
-         true <- details["has_docs"],
-         url = Path.join(details["url"], "docs"),
-         {:ok, {200, _, body}} <- :hex_http.request(config, :get, url, %{}, :undefined),
+    with {:ok, {200, _, body}} <- :hex_repo.get_docs(config, package, version),
          {:ok, docset} <- find_docset(body) do
       {:ok, docset}
     else
@@ -87,11 +94,21 @@ defmodule DocSupply.Hex do
   end
 
   defp config do
-    :hex_core.default_config()
-    |> Map.merge(%{
-      http_user_agent_fragment: user_agent_fragment(),
-      repo_url: "http://localhost:4010"
-    })
+    config =
+      :hex_core.default_config()
+      |> Map.merge(%{
+        http_adapter: {DocSupply.HexCore.FinchHTTP, %{name: DocSupply.Finch}},
+        http_user_agent_fragment: user_agent_fragment()
+      })
+
+    if provider =
+         :doc_supply
+         |> Application.get_env(__MODULE__, [])
+         |> Keyword.get(:config_provider) do
+      provider.init(config)
+    else
+      config
+    end
   end
 
   def user_agent_fragment do
