@@ -42,14 +42,14 @@ defmodule DocSupplyWeb.FeedControllerTest do
                <entry>
                  <version>0.1.2</version>
                  <url>http://localhost:4002/docsets/multi_format.tgz</url>
-                 <other_versions>
+                 <other-versions>
                    <version>
                      <name>0.1.1</name>
                    </version>
                    <version>
                      <name>0.1.0</name>
                    </version>
-                 </other_versions>
+                 </other-versions>
                </entry>\
                """
     end

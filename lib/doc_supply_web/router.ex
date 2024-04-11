@@ -23,6 +23,8 @@ defmodule DocSupplyWeb.Router do
   scope "/", DocSupplyWeb do
     pipe_through :feed
 
+    get "/docsets/:package", DocSetController, :show
+    get "/docsets/versions/:package/:version/:file", DocSetController, :show
     get "/feeds/:package", FeedController, :show
   end
 
