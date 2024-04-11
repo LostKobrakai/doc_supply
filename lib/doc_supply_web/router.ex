@@ -10,8 +10,8 @@ defmodule DocSupplyWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  pipeline :feed do
+    plug :accepts, ["xml"]
   end
 
   scope "/", DocSupplyWeb do
@@ -20,10 +20,11 @@ defmodule DocSupplyWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", DocSupplyWeb do
-  #   pipe_through :api
-  # end
+  scope "/", DocSupplyWeb do
+    pipe_through :feed
+
+    get "/feeds/:package", FeedController, :show
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:doc_supply, :dev_routes) do

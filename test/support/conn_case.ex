@@ -34,4 +34,22 @@ defmodule DocSupplyWeb.ConnCase do
   setup _tags do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
+
+  @doc """
+  Asserts the given status code, that we have a xml response and
+  returns the XML response if one was set or sent.
+
+  ## Examples
+
+      body = xml_response(conn, 200)
+      assert "<error>…</error>" == body
+
+  """
+  @spec xml_response(Conn.t(), status :: integer | atom) :: term
+  def xml_response(conn, status) do
+    body = Phoenix.ConnTest.response(conn, status)
+    _ = Phoenix.ConnTest.response_content_type(conn, :xml)
+
+    body
+  end
 end

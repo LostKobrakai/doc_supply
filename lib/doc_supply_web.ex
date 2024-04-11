@@ -39,7 +39,7 @@ defmodule DocSupplyWeb do
   def controller do
     quote do
       use Phoenix.Controller,
-        formats: [:html, :json],
+        formats: [:html, :json, :xml],
         layouts: [html: DocSupplyWeb.Layouts]
 
       import Plug.Conn
